@@ -1,5 +1,5 @@
 {
- "reported_at": "2026-11-04T14:11:47Z",
+ "reported_at": "2026-11-04T15:11:51Z",
  "dataride": {
   "last_success": "2026-11-04T13:51:08Z",
   "last_exit": 0
@@ -9,5 +9,5 @@
   "detail": "Draft ready for approval: MA C2 1, MA C2 2",
   "last_run": "2026-11-04T14:08:08Z"
  },
- "disk_free_gb": 9
+ "disk_free_gb": 7
 }
