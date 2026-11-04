@@ -1,0 +1,4 @@
+site/
+__pycache__/
+new_problems.txt
+.DS_Store

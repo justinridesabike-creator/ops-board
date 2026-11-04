@@ -1,0 +1,48 @@
+name: Ops Board
+
+on:
+  repository_dispatch:
+    types: [build-board]       # cron-job.org, hourly
+  push:
+    branches: [main]
+    paths: ["local/status.json", "build_board.py"]
+  schedule:
+    - cron: "37 */2 * * *"     # backup in case cron-job.org stops
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: board
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build the board
+        env:
+          OPS_READ_TOKEN: ${{ secrets.OPS_READ_TOKEN }}
+          OPS_CRUISE_TOKEN: ${{ secrets.OPS_CRUISE_TOKEN }}
+          OPS_JOBS_REPO: ${{ secrets.OPS_JOBS_REPO }}
+        run: python3 build_board.py
+      - name: Keep the alert marker off the site
+        run: if [ -f site/new_problems.txt ]; then mv site/new_problems.txt new_problems.txt; fi
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+      - uses: actions/deploy-pages@v4
+      - name: Alert on anything that just went bad
+        run: |
+          if [ -f new_problems.txt ]; then
+            echo "::error::New problem on the Ops Board"
+            cat new_problems.txt
+            exit 1
+          fi
