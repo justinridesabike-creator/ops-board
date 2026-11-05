@@ -1,13 +1,13 @@
 {
- "reported_at": "2026-11-05T15:57:28Z",
+ "reported_at": "2026-11-05T16:52:31Z",
  "dataride": {
   "last_success": "2026-11-04T13:51:08Z",
   "last_exit": 0
  },
  "cx": {
-  "state": "pending",
-  "detail": "Draft ready for approval: MA C2 1, MA C2 2",
-  "last_run": "2026-11-04T14:08:08Z"
+  "state": "current",
+  "detail": "Standings match the latest results",
+  "last_run": "2026-11-05T16:52:30Z"
  },
- "disk_free_gb": 8
+ "disk_free_gb": 10
 }
