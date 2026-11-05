@@ -1,8 +1,8 @@
 {
- "reported_at": "2026-11-05T20:25:01Z",
+ "reported_at": "2026-11-05T21:25:04Z",
  "dataride": {
   "last_success": "2026-11-04T13:51:08Z",
   "last_exit": 0
  },
- "disk_free_gb": 8
+ "disk_free_gb": 7
 }
