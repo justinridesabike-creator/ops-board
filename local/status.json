@@ -1,13 +1,8 @@
 {
- "reported_at": "2026-11-05T16:52:31Z",
+ "reported_at": "2026-11-05T17:03:49Z",
  "dataride": {
   "last_success": "2026-11-04T13:51:08Z",
   "last_exit": 0
  },
- "cx": {
-  "state": "current",
-  "detail": "Standings match the latest results",
-  "last_run": "2026-11-05T16:52:30Z"
- },
- "disk_free_gb": 10
+ "disk_free_gb": 9
 }
