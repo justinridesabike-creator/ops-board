@@ -48,7 +48,6 @@ class Local(unittest.TestCase):
     def rows(self, **over):
         base = dict(reported_at=b.iso(NOW - timedelta(hours=1)),
                     dataride=dict(last_success=b.iso(NOW - timedelta(days=2)), last_exit=0),
-                    cx=dict(state="current", detail="Up to date", last_run=b.iso(NOW)),
                     disk_free_gb=50)
         base.update(over)
         return {r["id"]: r for r in b.evaluate_local(base, NOW)}
@@ -72,10 +71,6 @@ class Local(unittest.TestCase):
     def test_low_disk(self):
         self.assertEqual(self.rows(disk_free_gb=4)["disk"]["state"], b.WARN)
         self.assertEqual(self.rows(disk_free_gb=1)["disk"]["state"], b.BAD)
-
-    def test_cx_pending_and_failed(self):
-        self.assertEqual(self.rows(cx=dict(state="pending"))["cx-autopilot"]["state"], b.WARN)
-        self.assertEqual(self.rows(cx=dict(state="failed"))["cx-autopilot"]["state"], b.BAD)
 
     def test_no_report_yet(self):
         self.assertTrue(all(r["state"] == b.UNKNOWN for r in b.evaluate_local(None, NOW)))

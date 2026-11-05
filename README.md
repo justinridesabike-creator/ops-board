@@ -3,7 +3,7 @@
 One phone-friendly page showing whether every scheduled job is healthy.
 
 - `build_board.py` runs in GitHub Actions, so it works with the Mac off. It reads run history for the cloud jobs and `local/status.json` for the Mac jobs, then publishes to GitHub Pages.
-- `local_report.py` runs hourly on the Mac (`install.sh` sets it up). It pushes Dataride, CX autopilot and disk status, and speaks up if the board itself stops updating.
+- `local_report.py` runs hourly on the Mac (`install.sh` sets it up). It pushes Dataride and disk status, and speaks up if the board itself stops updating.
 - **Alerts:** when a job newly turns bad, the workflow's last step fails, so GitHub's failed-run email is the alert. It fires once per problem, not every hour.
 - **The page is public.** It shows job names and timing only. Never add client, rider or personal data.
 

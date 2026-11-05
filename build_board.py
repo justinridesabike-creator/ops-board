@@ -118,10 +118,9 @@ def evaluate_local(local, now):
     but a weekly job past its limit is bad however quiet the Mac has been."""
     base = dict(group="This Mac")
     dr = dict(id="dataride", label="Dataride results sync", cadence="Mondays, 9 AM", **base)
-    cx = dict(id="cx-autopilot", label="CX standings autopilot", cadence="After Dataride sync", **base)
     disk = dict(id="disk", label="Mac free disk space", cadence="Hourly report", **base)
     if not local or not local.get("reported_at"):
-        return [row(j, UNKNOWN, "The Mac hasn't reported yet") for j in (dr, cx, disk)]
+        return [row(j, UNKNOWN, "The Mac hasn't reported yet") for j in (dr, disk)]
     reported = parse_ts(local["reported_at"])
     quiet = (now - reported).total_seconds()
     offline = quiet > 26 * HOUR
@@ -136,18 +135,6 @@ def evaluate_local(local, now):
     else:
         dr_row = row(dr, OK, "Running normally", last_ok)
 
-    c = local.get("cx") or {}
-    state = c.get("state")
-    last_cx = parse_ts(c.get("last_run"))
-    if state == "failed":
-        cx_row = row(cx, BAD, c.get("detail") or "Autopilot failed", last_cx)
-    elif state == "pending":
-        cx_row = row(cx, WARN, c.get("detail") or "Draft standings waiting for your approval", last_cx)
-    elif state:
-        cx_row = row(cx, OK, c.get("detail") or "Up to date", last_cx)
-    else:
-        cx_row = row(cx, UNKNOWN, "Hasn't run yet")
-
     free = local.get("disk_free_gb")
     if offline:
         disk_row = row(disk, UNKNOWN, offline_note, reported)
@@ -156,7 +143,7 @@ def evaluate_local(local, now):
     else:
         state = BAD if free < 2 else WARN if free < 5 else OK
         disk_row = row(disk, state, f"{free} GB free", reported)
-    return [dr_row, cx_row, disk_row]
+    return [dr_row, disk_row]
 
 
 def new_problems(rows, previous):

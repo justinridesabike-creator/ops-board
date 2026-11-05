@@ -23,7 +23,6 @@ GH = "/opt/homebrew/bin/gh"
 SUPPORT = os.path.join(HOME, "Library/Application Support")
 CACHE = os.path.join(SUPPORT, "OpsBoard/last_push.json")
 STAMP = os.path.join(SUPPORT, "DatarideSync/last_success")
-CX_STATUS = os.path.join(SUPPORT, "CXAutopilot/status.json")
 KEEPALIVE_S = 6 * 3600
 BOARD_STALE_S = 6 * 3600
 
@@ -49,14 +48,8 @@ def gather():
             last_success = iso(int(f.readline().strip()))
     except (OSError, ValueError):
         last_success = None
-    try:
-        with open(CX_STATUS) as f:
-            cx = json.load(f)
-    except (OSError, ValueError):
-        cx = None
     return dict(
         dataride=dict(last_success=last_success, last_exit=last_exit("com.justinevans.dataride-sync")),
-        cx=cx,
         disk_free_gb=int(shutil.disk_usage(HOME).free / 1e9),
     )
 
