@@ -23,6 +23,7 @@ GH = "/opt/homebrew/bin/gh"
 SUPPORT = os.path.join(HOME, "Library/Application Support")
 CACHE = os.path.join(SUPPORT, "OpsBoard/last_push.json")
 STAMP = os.path.join(SUPPORT, "DatarideSync/last_success")
+TIDY_STAMP = os.path.join(SUPPORT, "DiskTidy/last_tidy")
 KEEPALIVE_S = 6 * 3600
 BOARD_STALE_S = 6 * 3600
 
@@ -42,14 +43,19 @@ def last_exit(label):
     return int(m.group(1)) if m else None
 
 
-def gather():
+def read_stamp(path):
+    """An epoch-seconds stamp file as ISO time, or None if missing or unreadable."""
     try:
-        with open(STAMP) as f:
-            last_success = iso(int(f.readline().strip()))
+        with open(path) as f:
+            return iso(int(f.readline().strip()))
     except (OSError, ValueError):
-        last_success = None
+        return None
+
+
+def gather():
     return dict(
-        dataride=dict(last_success=last_success, last_exit=last_exit("com.justinevans.dataride-sync")),
+        dataride=dict(last_success=read_stamp(STAMP), last_exit=last_exit("com.justinevans.dataride-sync")),
+        disk_tidy=dict(last_success=read_stamp(TIDY_STAMP), last_exit=last_exit("com.justinevans.disk-tidy")),
         disk_free_gb=int(shutil.disk_usage(HOME).free / 1e9),
     )
 

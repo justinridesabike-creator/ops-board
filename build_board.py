@@ -119,8 +119,9 @@ def evaluate_local(local, now):
     base = dict(group="This Mac")
     dr = dict(id="dataride", label="Dataride results sync", cadence="Mondays, 9 AM", **base)
     disk = dict(id="disk", label="Mac free disk space", cadence="Hourly report", **base)
+    tidy = dict(id="disk_tidy", label="Disk Tidy cache cleanup", cadence="Weekly (checks daily, 10:30 AM)", **base)
     if not local or not local.get("reported_at"):
-        return [row(j, UNKNOWN, "The Mac hasn't reported yet") for j in (dr, disk)]
+        return [row(j, UNKNOWN, "The Mac hasn't reported yet") for j in (dr, disk, tidy)]
     reported = parse_ts(local["reported_at"])
     quiet = (now - reported).total_seconds()
     offline = quiet > 26 * HOUR
@@ -143,7 +144,19 @@ def evaluate_local(local, now):
     else:
         state = BAD if free < 2 else WARN if free < 5 else OK
         disk_row = row(disk, state, f"{free} GB free", reported)
-    return [dr_row, disk_row]
+
+    t = local.get("disk_tidy")
+    if t is None:
+        tidy_row = row(tidy, UNKNOWN, "The Mac hasn't reported this job yet")
+    else:
+        t_ok = parse_ts(t.get("last_success"))
+        if not t_ok or now - t_ok > timedelta(days=9):
+            tidy_row = row(tidy, BAD, "No cleanup in over 9 days", t_ok)
+        elif t.get("last_exit") not in (0, None):
+            tidy_row = row(tidy, BAD, f"Last run failed (exit {t['last_exit']}); check its log", t_ok)
+        else:
+            tidy_row = row(tidy, OK, "Running normally", t_ok)
+    return [dr_row, disk_row, tidy_row]
 
 
 def new_problems(rows, previous):

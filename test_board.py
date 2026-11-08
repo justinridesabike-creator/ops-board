@@ -48,7 +48,8 @@ class Local(unittest.TestCase):
     def rows(self, **over):
         base = dict(reported_at=b.iso(NOW - timedelta(hours=1)),
                     dataride=dict(last_success=b.iso(NOW - timedelta(days=2)), last_exit=0),
-                    disk_free_gb=50)
+                    disk_free_gb=50,
+                    disk_tidy=dict(last_success=b.iso(NOW - timedelta(days=3)), last_exit=0))
         base.update(over)
         return {r["id"]: r for r in b.evaluate_local(base, NOW)}
 
@@ -71,6 +72,20 @@ class Local(unittest.TestCase):
     def test_low_disk(self):
         self.assertEqual(self.rows(disk_free_gb=4)["disk"]["state"], b.WARN)
         self.assertEqual(self.rows(disk_free_gb=1)["disk"]["state"], b.BAD)
+
+    def test_disk_tidy_too_old(self):
+        r = self.rows(disk_tidy=dict(last_success=b.iso(NOW - timedelta(days=10)), last_exit=0))
+        self.assertEqual(r["disk_tidy"]["state"], b.BAD)
+
+    def test_disk_tidy_failed_exit(self):
+        r = self.rows(disk_tidy=dict(last_success=b.iso(NOW - timedelta(days=1)), last_exit=1))
+        self.assertEqual(r["disk_tidy"]["state"], b.BAD)
+
+    def test_disk_tidy_missing_from_older_report_is_unknown(self):
+        base = dict(reported_at=b.iso(NOW - timedelta(hours=1)),
+                    dataride=dict(last_success=b.iso(NOW - timedelta(days=2)), last_exit=0), disk_free_gb=50)
+        r = {x["id"]: x for x in b.evaluate_local(base, NOW)}
+        self.assertEqual(r["disk_tidy"]["state"], b.UNKNOWN)
 
     def test_no_report_yet(self):
         self.assertTrue(all(r["state"] == b.UNKNOWN for r in b.evaluate_local(None, NOW)))
