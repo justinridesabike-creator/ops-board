@@ -1,12 +1,12 @@
 {
- "reported_at": "2026-11-09T14:46:12Z",
+ "reported_at": "2026-11-09T15:46:15Z",
  "dataride": {
   "last_success": "2026-11-09T14:09:38Z",
   "last_exit": 0
  },
  "disk_tidy": {
   "last_success": "2026-11-08T14:51:49Z",
-  "last_exit": null
+  "last_exit": 0
  },
- "disk_free_gb": 59
+ "disk_free_gb": 58
 }
